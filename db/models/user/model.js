@@ -9,6 +9,9 @@ const USER_STATUS = {
 
 const userSchema = mongoose.Schema({
     companyName : {type : String},
+    userBio : {type : String}, // for freelancer only
+    userAbout : {type : String}, // for freelancer only
+    userSkills : {type : Array}, // for freelancer only
     firstName : {type : String },
     lastName : {type : String },
     username : {type : String , required: true , unique : [true , "User with given username already exists"]},
