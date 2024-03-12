@@ -26,7 +26,7 @@ const validateJwt = (req , res , next) => {
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
         const {userStatus , isRecruiter} = decoded;
 
-        if(userStatus === USER_STATUS.BLOCKED){
+        if(userStatus === USER_STATUS.BLOCKED || isRecruiter === false){
             return res.status(401).send(ERR_CODES[415]);
         }
         

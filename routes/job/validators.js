@@ -56,4 +56,17 @@ const jobValidator = joi.object({
     salaryType : salaryTypeSchema
 })
 
-module.exports = jobValidator;
+const invitationValidator = joi.object({
+    companyName : jobTitleSchema,
+    jobTitle : companyNameSchema,
+    jobScope : jobScopeSchema,
+    jobType : jobTypeSchema,
+    jobMode : jobModeSchema,
+    jobSalary : salarySchema,
+    jobExperience : jobExperienceSchema,
+    jobDescription : longTextSchema,
+    salaryType : salaryTypeSchema
+})
+
+module.exports.jobValidator = jobValidator;
+module.exports.invitationValidator = invitationValidator;

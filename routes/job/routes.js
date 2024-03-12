@@ -7,20 +7,13 @@ const getNextSequenceValue = require('../../helpers/sequence');
 
 const {USER_STATUS} = require('../../db/models/user/model');
 
-const jobValidator = require('./validators');
+const {jobValidator} = require('./validators');
 
 router.use(validateJwt);
 
 router.post('/add' , async(req , res) => {
     
-    const {userStatus , id , isRecruiter} = req.user;
-    if(isRecruiter === false || userStatus === USER_STATUS.BLOCKED){
-        return res.status(415).send("Unauthorized Access");
-    }
-
-    if(userStatus === USER_STATUS.UNVERIFIED){
-        return res.status(415).send("Unverified User");
-    }
+    const {id } = req.user;
 
     const job = req.body;
     if(!job){
@@ -49,6 +42,11 @@ router.post('/add' , async(req , res) => {
 
 router.get('/myjobs' , async(req , res) => {
     const {id} = req.user;
+
+    if(!id){
+        return res.status(400).send("Invalid User Id");
+    }
+
     try{
         const jobs = await Job.find({postedBy : id});
         return res.status(200).send(jobs);
