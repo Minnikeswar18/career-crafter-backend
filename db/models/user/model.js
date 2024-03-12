@@ -8,7 +8,7 @@ const USER_STATUS = {
 }
 
 const userSchema = mongoose.Schema({
-    companyName : {type : String},
+    companyName : {type : String}, //for recruiter only
     userBio : {type : String}, // for freelancer only
     userAbout : {type : String}, // for freelancer only
     userSkills : {type : Array}, // for freelancer only

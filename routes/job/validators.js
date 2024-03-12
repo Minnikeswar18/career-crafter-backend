@@ -22,27 +22,22 @@ const salarySchema = joi.string()
 const jobTypeSchema = joi.string()
     .required()
     .valid('Full Time', 'Part Time', 'Performance based FTE')
-    // .message('Job Type should be Full Time, Part Time or Performance based FTE');
 
 const jobExperienceSchema = joi.string()
     .required()
     .valid('Fresher (0-2 years)' , 'Intermediate (2-5 years)' , 'Expert (5+ years)')
-    // .message('Job Experience should be Fresher (0-2 years), Intermediate (2-5 years) or Expert (5+ years)');
 
 const jobModeSchema = joi.string()
     .required()
     .valid('Work from Office', 'Work from Home', 'Hybrid')
-    // .message('Job Mode should be Work from Office, Work from Home or Hybrid');
 
 const jobScopeSchema = joi.string()
     .required()
     .valid('Small', 'Medium', 'Large')
-    // .message('Job Scope should be Small, Medium or Large');
 
 const salaryTypeSchema = joi.string()
     .required()
     .valid('Hourly rate (/hr)', 'Fixed price')
-    // .message('Salary Type should be Hourly rate (/hr) or Fixed price');
 
 const skillsSchema = joi.array().items(
     joi.string()
