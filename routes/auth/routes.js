@@ -59,6 +59,8 @@ router.post('/login' , async (req, res) => {
         email,
         username : user.username,
         userStatus : user.userStatus,
+        firstName : user.firstName ? user.firstName : null,
+        lastName : user.lastName ? user.lastName : null,
         isRecruiter : user.isRecruiter,
         loginTime : new Date().toString()
     }
