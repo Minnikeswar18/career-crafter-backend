@@ -8,6 +8,7 @@ dotenv.config();
 const {connectToDataBase} = require('./helpers/db');
 const authRoutes = require('./routes/auth/routes');
 const jobRoutes = require('./routes/job/routes');
+const hireRoutes = require('./routes/hire/routes');
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 
 app.use('/auth', authRoutes);
 app.use('/job', jobRoutes);
+app.use('/hire', hireRoutes);
 
 connectToDataBase().then(()=>{
     try{

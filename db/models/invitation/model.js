@@ -12,6 +12,7 @@ const invitationSchema = mongoose.Schema({
     jobSalary : {type : String , required : true},
     salaryType : {type : String , required : true},
     jobDescription : {type : String , required : true},
+    status : {type : String , required : true , default : 'pending'},
 });
 
 const Invitation = mongoose.model('invitation',invitationSchema);

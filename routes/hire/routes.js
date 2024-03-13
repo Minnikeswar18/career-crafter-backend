@@ -9,22 +9,22 @@ const {invitationValidator} = require('../job/validators');
 const validateJwt = require('../../middleware/jwt');
 router.use(validateJwt);
 
-router.get('/myDetails' , async(req , res) => {
-    const {id} = req.user;
+// router.get('/myDetails' , async(req , res) => {
+//     const {id} = req.user;
 
-    if(!id) return res.status(400).send("Bad Request");
-    try{
-        const user = await User.findOne({_id : id});
-        const response = {
-            firstName : user.firstName ? user.firstName : "",
-            lastName : user.lastName ? user.lastName : "",
-        }
-        return res.status(200).send(response);
-    }
-    catch(err){
-        return res.status(500).send(err);
-    }
-});
+//     if(!id) return res.status(400).send("Bad Request");
+//     try{
+//         const user = await User.findOne({_id : id});
+//         const response = {
+//             firstName : user.firstName ? user.firstName : "",
+//             lastName : user.lastName ? user.lastName : "",
+//         }
+//         return res.status(200).send(response);
+//     }
+//     catch(err){
+//         return res.status(500).send(err);
+//     }
+// });
 
 router.get('/getFreelancers' , async(req , res) => {
     try{
@@ -56,4 +56,6 @@ router.post('/invite' , async(req , res) => {
         return res.status(500).send(err);
     }
 });
+
+module.exports = router;
 
