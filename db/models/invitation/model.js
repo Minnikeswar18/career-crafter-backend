@@ -1,8 +1,12 @@
 const mongoose = require('mongoose')
 
 const invitationSchema = mongoose.Schema({
-    invitee : {type : mongoose.Schema.Types.ObjectId , ref : 'User'},
-    inviter : {type : mongoose.Schema.Types.ObjectId , ref : 'User'},
+    invitee : {type : mongoose.Schema.Types.ObjectId , ref : 'User' , required : true},
+    inviter : {type : mongoose.Schema.Types.ObjectId , ref : 'User' , required : true},
+    inviteeUsername : {type : String , required : true},
+    inviterUsername : {type : String , required : true},
+    inviteeEmail : {type : String , required : true},
+    inviterEmail : {type : String , required : true},
     createdAt : {type : Date , required : true , default : Date.now},
     companyName : {type : String , required : true},
     jobTitle : {type : String , required : true},

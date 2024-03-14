@@ -43,6 +43,14 @@ const skillsSchema = joi.array().items(
     joi.string()
 );
 
+const usernameSchema = joi.string()
+    .min(6)
+    .max(20)
+    .required()
+    .regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/)
+    .message('Username should contain only alphanumeric characters and underscores, starting with an alphabet or an underscore');
+
+
 const jobValidator = joi.object({
     companyName : jobTitleSchema,
     jobTitle : companyNameSchema,
@@ -64,7 +72,9 @@ const invitationValidator = joi.object({
     jobMode : jobModeSchema,
     jobSalary : salarySchema,
     jobDescription : longTextSchema,
-    salaryType : salaryTypeSchema
+    salaryType : salaryTypeSchema,
+    inviteeUsername : usernameSchema,
+    inviteeEmail : joi.string().email().required()
 })
 
 module.exports.jobValidator = jobValidator;

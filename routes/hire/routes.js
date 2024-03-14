@@ -9,23 +9,6 @@ const {invitationValidator} = require('../job/validators');
 const validateJwt = require('../../middleware/jwt');
 router.use(validateJwt);
 
-// router.get('/myDetails' , async(req , res) => {
-//     const {id} = req.user;
-
-//     if(!id) return res.status(400).send("Bad Request");
-//     try{
-//         const user = await User.findOne({_id : id});
-//         const response = {
-//             firstName : user.firstName ? user.firstName : "",
-//             lastName : user.lastName ? user.lastName : "",
-//         }
-//         return res.status(200).send(response);
-//     }
-//     catch(err){
-//         return res.status(500).send(err);
-//     }
-// });
-
 router.get('/getFreelancers' , async(req , res) => {
     try{
         const freelancers = await User.find({userStatus : USER_STATUS.VERIFIED , isRecruiter : false});
@@ -38,7 +21,7 @@ router.get('/getFreelancers' , async(req , res) => {
 
 router.post('/invite' , async(req , res) => {
     const {invitee , invitation} = req.body;
-    const {id} = req.user;
+    const {id , email , username} = req.user;
 
     if(!invitee || !invitation || !id) return res.status(400).send("Bad Request");
 
@@ -46,7 +29,9 @@ router.post('/invite' , async(req , res) => {
     if(error) return res.status(400).send(error.details[0].message);
     
     invitation.inviter = id;
+    invitation.inviterEmail = email;
     invitation.invitee = invitee;
+    invitation.inviterUsername = username;
     try{
         const newInvitation = new Invitation(invitation);
         await newInvitation.save();
@@ -56,6 +41,34 @@ router.post('/invite' , async(req , res) => {
         return res.status(500).send(err);
     }
 });
+
+router.get('/getInvitations' , async(req , res) => {
+    const {id} = req.user;
+    if(!id) return res.status(400).send("Bad Request");
+
+    try{
+        const invitations = await Invitation.find({inviter : id});
+        return res.status(200).send(invitations);
+    }
+    catch(err){
+        return res.status(500).send(err);
+    }
+});
+
+router.delete('/deleteInvitation/:invitationId' , async(req , res) => {
+    const {invitationId} = req.params;
+    const userId = req.user.id;
+    console.log(invitationId , userId)
+    if(!invitationId || !userId) return res.status(400).send("Bad Request");
+
+    try{
+        await Invitation.deleteOne({_id : invitationId, inviter : userId});
+        return res.status(200).send("Invitation Deleted Successfully");
+    }
+    catch(err){
+        return res.status(500).send(err);
+    }
+})
 
 module.exports = router;
 

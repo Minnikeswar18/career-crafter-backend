@@ -178,108 +178,12 @@ router.post('/verifyjwt' , async (req, res) => {
             return res.status(400).send(ERR_CODES[414]);
         }
 
-        return res.status(200).send({username : decoded.username});
+        return res.status(200).send({username : decoded.username , email : decoded.email});
     }
     catch(err){
         return res.status(400).send("Invalid Token");
     }
 });
 
-// router.get('/help' , async(req , res) => {
-//     const users = [
-//         {
-//           "username": "JohnDoe",
-//           "email": "johndoe@example.com",
-//           "password": "$2a$10$N9NItW68lxTUnRd5r4oMBu/4P/hL0lH2bEmnhXib7LPKF/7WFGjgm",
-//           "otp": null,
-//           "userStatus": 1,
-//           "isRecruiter": false,
-//           "userBio": "Software Developer",
-//           "userAbout": "I am a software engineer with 5 years of experience in web development. I specialize in React and Node.js development. Currently exploring new technologies to enhance my skills.",
-//           "userSkills": ["React", "Node.js"],
-//           "firstName": "John"
-//         },
-//         {
-//           "username": "JaneSmith",
-//           "email": "janesmith@example.com",
-//           "password": "$2a$10$ZT/qflN0ApsSG1SwFtwNn.Pu0HR2Qns44pEDNarYyUNitOifIt2TS",
-//           "otp": null,
-//           "userStatus": 1,
-//           "isRecruiter": false,
-//           "userBio": "Software Developer",
-//           "userAbout": "I am a front-end developer with expertise in React and Angular. Passionate about creating interactive and user-friendly web applications.",
-//           "userSkills": ["React", "Angular"],
-//           "firstName": "Jane",
-//           "lastName": "Smith"
-//         },
-//         {
-//           "username": "MikeJohnson",
-//           "email": "mikejohnson@example.com",
-//           "password": "$2a$10$ZT/qflN0ApsSG1SwFtwNn.Pu0HR2Qns44pEDNarYyUNitOifIt2TS",
-//           "otp": null,
-//           "userStatus": 1,
-//           "isRecruiter": false,
-//           "userBio": "Software Developer",
-//           "userAbout": "Experienced full-stack developer proficient in React, Node.js, Express, and MongoDB. Currently working on a project involving microservices architecture.",
-//           "userSkills": ["React", "Node.js", "Express", "MongoDB"],
-//           "lastName": "Johnson"
-//         },
-//         {
-//           "username": "EmilyBrown",
-//           "email": "emilybrown@example.com",
-//           "password": "$2a$10$ZT/qflN0ApsSG1SwFtwNn.Pu0HR2Qns44pEDNarYyUNitOifIt2TS",
-//           "otp": null,
-//           "userStatus": 1,
-//           "isRecruiter": false,
-//           "userBio": "Software Developer",
-//           "userAbout": "Backend developer with expertise in Node.js and Express. Interested in serverless architectures and cloud technologies.",
-//           "userSkills": ["Node.js", "Express"],
-//           "firstName": "Emily"
-//         },
-//         {
-//           "username": "AlexMiller",
-//           "email": "alexmiller@example.com",
-//           "password": "$2a$10$ZT/qflN0ApsSG1SwFtwNn.Pu0HR2Qns44pEDNarYyUNitOifIt2TS",
-//           "otp": null,
-//           "userStatus": 1,
-//           "isRecruiter": false,
-//           "userBio": "Software Developer",
-//           "userAbout": "Passionate about React development and UI/UX design. Always looking for opportunities to learn and grow in the field of front-end development.",
-//           "userSkills": ["React", "HTML", "CSS", "JavaScript"],
-//           "lastName": "Miller"
-//         },
-//         {
-//           "username": "SarahTaylor",
-//           "email": "sarahtaylor@example.com",
-//           "password": "$2a$10$ZT/qflN0ApsSG1SwFtwNn.Pu0HR2Qns44pEDNarYyUNitOifIt2TS",
-//           "otp": null,
-//           "userStatus": 1,
-//           "isRecruiter": false,
-//           "userBio": "Software Developer",
-//           "userAbout": "Full-stack developer with experience in React, Node.js, MongoDB, and AWS. Passionate about building scalable and high-performance applications.",
-//           "userSkills": ["React", "Node.js", "MongoDB", "AWS"],
-//           "firstName": "Sarah"
-//         },
-//         {
-//           "username": "RyanClark",
-//           "email": "ryanclark@example.com",
-//           "password": "$2a$10$ZT/qflN0ApsSG1SwFtwNn.Pu0HR2Qns44pEDNarYyUNitOifIt2TS",
-//           "otp": null,
-//           "userStatus": 1,
-//           "isRecruiter": false,
-//           "userBio": "Software Developer",
-//           "userAbout": "Software engineer with a focus on mobile app development using React Native. Currently working on a cross-platform project for iOS and Android.",
-//           "userSkills": ["React Native", "JavaScript", "iOS", "Android"]
-//         }
-//       ]
-//     try{
-//         await User.insertMany(users);
-//         return res.status(200).send("Data Inserted Successfully");
-//     }
-//     catch(err){
-//         console.log(err);
-//         return res.status(501).send(ERR_CODES[501]);
-//     }
-// });
 
 module.exports = router;
