@@ -52,8 +52,8 @@ const usernameSchema = joi.string()
 
 
 const jobValidator = joi.object({
-    companyName : jobTitleSchema,
-    jobTitle : companyNameSchema,
+    companyName : companyNameSchema,
+    jobTitle : jobTitleSchema,
     jobScope : jobScopeSchema,
     jobType : jobTypeSchema,
     jobMode : jobModeSchema,

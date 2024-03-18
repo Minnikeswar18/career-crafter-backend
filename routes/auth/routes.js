@@ -24,7 +24,7 @@ const ERR_CODES = {
     411 : "User with email already exists",
     412 : "Invalid OTP",
     413 : "Invalid Credentials",
-    414 : "User not verified",
+    414 : "User email not verified",
     415 : "Unauthorized Access",
 };
 
@@ -178,12 +178,11 @@ router.post('/verifyjwt' , async (req, res) => {
             return res.status(400).send(ERR_CODES[414]);
         }
 
-        return res.status(200).send({username : decoded.username , email : decoded.email});
+        return res.status(200).send(decoded);
     }
     catch(err){
         return res.status(400).send("Invalid Token");
     }
 });
-
 
 module.exports = router;

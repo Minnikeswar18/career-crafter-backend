@@ -58,7 +58,6 @@ router.get('/getInvitations' , async(req , res) => {
 router.delete('/deleteInvitation/:invitationId' , async(req , res) => {
     const {invitationId} = req.params;
     const userId = req.user.id;
-    console.log(invitationId , userId)
     if(!invitationId || !userId) return res.status(400).send("Bad Request");
 
     try{
