@@ -1,12 +1,18 @@
 const mongoose = require('mongoose')
 
+const INVITATION_STATUS = {
+    ACCEPTED : 1,
+    PENDING : 0,
+    REJECTED : -1,
+}
+
 const invitationSchema = mongoose.Schema({
     invitee : {type : mongoose.Schema.Types.ObjectId , ref : 'User' , required : true},
     inviter : {type : mongoose.Schema.Types.ObjectId , ref : 'User' , required : true},
     inviteeUsername : {type : String , required : true},
     inviterUsername : {type : String , required : true},
     inviteeEmail : {type : String , required : true},
-    inviterEmail : {type : String , required : true},
+    inviterEmail : {type : String , required : true}, //remove
     createdAt : {type : Date , required : true , default : Date.now},
     companyName : {type : String , required : true},
     jobTitle : {type : String , required : true},
@@ -16,9 +22,9 @@ const invitationSchema = mongoose.Schema({
     jobSalary : {type : String , required : true},
     salaryType : {type : String , required : true},
     jobDescription : {type : String , required : true},
-    status : {type : String , required : true , default : 'pending'},
+    status : {type : String , required : true , default : INVITATION_STATUS.PENDING},
 });
 
 const Invitation = mongoose.model('invitation',invitationSchema);
 
-module.exports = Invitation;
+module.exports = {Invitation , INVITATION_STATUS};

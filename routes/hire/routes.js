@@ -3,8 +3,9 @@ const router = express.Router();
 
 const {User , USER_STATUS} = require('../../db/models/user/model');
 
-const Invitation = require('../../db/models/invitation/model');
+const {Invitation} = require('../../db/models/invitation/model');
 const {invitationValidator} = require('../job/validators');
+const {sendInviteEmail} = require('../../helpers/email');
 
 const validateJwt = require('../../middleware/jwt');
 router.use(validateJwt);
@@ -20,22 +21,22 @@ router.get('/getFreelancers' , async(req , res) => {
 });
 
 router.post('/invite' , async(req , res) => {
-    const {invitee , invitation} = req.body;
-    const {id , email , username} = req.user;
+    const {inviteeId , invitation} = req.body;
+    const {id , username} = req.user;
 
-    if(!invitee || !invitation || !id) return res.status(400).send("Bad Request");
+    if(!inviteeId || !invitation || !id) return res.status(400).send("Bad Request");
 
     const {error} = invitationValidator.validate(invitation);
     if(error) return res.status(400).send(error.details[0].message);
     
     invitation.inviter = id;
-    invitation.inviterEmail = email;
-    invitation.invitee = invitee;
+    invitation.invitee = inviteeId;
     invitation.inviterUsername = username;
     try{
         const newInvitation = new Invitation(invitation);
         await newInvitation.save();
-        return res.status(200).send("Invitation Sent Successfully");
+        await sendInviteEmail(invitation.inviteeEmail , invitation.inviteeUsername , username , invitation.jobTitle);
+        return res.status(200).send("Invitation sent successfully");
     }
     catch(err){
         return res.status(500).send(err);

@@ -10,7 +10,35 @@ const getRandomString = () => {
 	return result;
 }
 
-const sendVerificationEmail = async (otp , username , receiverEmailAdd) => {
+const sendInviteEmail = async (inviteeEmail , inviteeUsername, inviterUsername , jobTitle) => {
+	const TRANSPORTER = nodemailer.createTransport({
+		host: process.env.SMTP_HOST,
+		port: 587,
+		secureConnection: false,
+		tls: {
+			ciphers: "SSLv3",
+		},
+		auth: {
+			user: process.env.SMTP_USER,
+			pass: process.env.SMTP_PASS
+		}}
+	);
+
+	const mailBody = `Dear ${inviteeUsername},
+	
+	You have been invited by ${inviterUsername} to apply for the job of ${jobTitle}
+	
+	All the best for your application.`;
+
+	const mailOptions = {
+		from : process.env.SMTP_USER,
+		to : inviteeEmail,
+		subject : "Invitation to Apply",
+		html : mailBody
+	}	
+};
+
+const sendVerificationEmail = async (otp , username , receiverEmailAdd , message) => {
 	const TRANSPORTER = nodemailer.createTransport({
 		host: process.env.SMTP_HOST,
 		port: 587,
@@ -26,9 +54,10 @@ const sendVerificationEmail = async (otp , username , receiverEmailAdd) => {
 
 	const mailBody = `Dear ${username},
 
-	Thank you for registering. Please click the link below to verify your email address:
-	
-	http://localhost:${process.env.PORT}/auth/verify/${otp}`
+	${message}
+
+	Please click <a href="http://localhost:${process.env.PORT}/auth/verify/${otp}">here</a> to verify your email address.`;
+
 
 	const mailOptions = {
 		from : process.env.SMTP_USER,
@@ -45,5 +74,4 @@ const sendVerificationEmail = async (otp , username , receiverEmailAdd) => {
 	}
 }
 
-module.exports = {getRandomString , sendVerificationEmail}
-//anchor
+module.exports = {getRandomString , sendVerificationEmail , sendInviteEmail};

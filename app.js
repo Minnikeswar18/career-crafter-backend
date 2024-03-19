@@ -30,7 +30,6 @@ connectToDataBase().then(()=>{
         });
     }
     catch(err){
-        console.log(err);
         console.log("SERVER CONNECTION FAILED");
     }
 }).catch(err => {

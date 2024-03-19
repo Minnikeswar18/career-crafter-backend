@@ -4,7 +4,7 @@ const router = express.Router();
 const {profileValidator , emailValidator , passwordValidator} = require('./validators');
 const { doesUserExist } = require('../../helpers/db');
 const { comparePassword , hashPassword } = require('../../helpers/password');
-const {sendVerificationEmail} = require('../../helpers/email');
+const {sendVerificationEmail , getRandomString} = require('../../helpers/email');
 const validateJwt = require('../../middleware/jwt');
 const { USER_STATUS } = require('../../db/models/user/model');
 
@@ -36,12 +36,14 @@ router.get('/getProfile' , async(req , res) => {
 });
 
 router.post('/updateProfile' , async(req , res) => {
-    const {id , isRecruiter} = req.user;
-
-    if(isRecruiter === false) return res.status(403).send("Unauthorized Access");
+    const {id} = req.user;
 
     const {profile} = req.body;
     if(!id || !profile) return res.status(400).send("Bad Request");
+
+    if(!profile.firstName) delete profile.firstName;
+    if(!profile.lastName) delete profile.lastName;
+    if(!profile.companyName) delete profile.companyName;
 
     const {error} = profileValidator.validate(profile);
     if(error) return res.status(400).send(error.details[0].message);
@@ -70,6 +72,7 @@ router.post('/changeEmail' , async(req , res) => {
     if(error) return res.status(400).send(error.details[0].message);
     
     const {email , password} = req.body.data;
+    const otp = getRandomString() + username;
     try{
         const user = await doesUserExist({email});
         if(user){
@@ -86,23 +89,20 @@ router.post('/changeEmail' , async(req , res) => {
 
         currUser.email = email;
         currUser.userStatus = USER_STATUS.UNVERIFIED;
-
+        currUser.otp = otp;
         await currUser.save();
     }
     catch(err){
         return res.status(500).send(err);
     }
-    let hashedPassword = null , otp = null;
     try{
-        hashedPassword = await hashPassword(password);
-        otp = getRandomString() + username;
-        await sendVerificationEmail(otp , username , email);
-        return res.status(200).send("Email updated successfully and verification email sent");
+        await sendVerificationEmail(otp , username , email , "Your email has been updated successfully.");
     }
     catch(err){
         console.log(err);
-        return res.status(502).send(ERR_CODES[502]);
+        return res.status(502).send("Email updated successfully but verification email could not be sent");
     }
+    return res.status(200).send("Email updated successfully and verification email sent");
 });
 
 router.post('/changePassword' , async(req , res) => {

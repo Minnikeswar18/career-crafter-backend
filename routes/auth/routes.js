@@ -56,7 +56,6 @@ router.post('/login' , async (req, res) => {
 
     const payLoad = {
         id : user._id,
-        email,
         username : user.username,
         userStatus : user.userStatus,
         isRecruiter : user.isRecruiter,
@@ -106,7 +105,7 @@ router.post('/register' , async (req, res) => {
         try{
             hashedPassword = await hashPassword(password);
             otp = getRandomString() + username;
-            await sendVerificationEmail(otp , username , email);
+            await sendVerificationEmail(otp , username , email , "Thanks for registering.");
         }
         catch(err){
             console.log(err);
