@@ -73,7 +73,6 @@ const invitationValidator = joi.object({
     jobSalary : salarySchema,
     jobDescription : longTextSchema,
     salaryType : salaryTypeSchema,
-    inviteeUsername : usernameSchema,
     inviteeEmail : joi.string().email().required()
 })
 

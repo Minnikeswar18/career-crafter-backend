@@ -12,7 +12,6 @@ const invitationSchema = mongoose.Schema({
     inviteeUsername : {type : String , required : true},
     inviterUsername : {type : String , required : true},
     inviteeEmail : {type : String , required : true},
-    inviterEmail : {type : String , required : true}, //remove
     createdAt : {type : Date , required : true , default : Date.now},
     companyName : {type : String , required : true},
     jobTitle : {type : String , required : true},
@@ -22,7 +21,7 @@ const invitationSchema = mongoose.Schema({
     jobSalary : {type : String , required : true},
     salaryType : {type : String , required : true},
     jobDescription : {type : String , required : true},
-    status : {type : String , required : true , default : INVITATION_STATUS.PENDING},
+    status : {type : Number , required : true , default : INVITATION_STATUS.PENDING},
 });
 
 const Invitation = mongoose.model('invitation',invitationSchema);

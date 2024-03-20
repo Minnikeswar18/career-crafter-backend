@@ -2,20 +2,32 @@ const express = require('express');
 const router = express.Router();
 
 const {User , USER_STATUS} = require('../../db/models/user/model');
+const Profile = require('../../db/models/freelancer/model');
 
-const {Invitation} = require('../../db/models/invitation/model');
+const {Invitation, INVITATION_STATUS} = require('../../db/models/invitation/model');
 const {invitationValidator} = require('../job/validators');
 const {sendInviteEmail} = require('../../helpers/email');
 
 const validateJwt = require('../../middleware/jwt');
+const mongoose = require('mongoose');
 router.use(validateJwt);
 
 router.get('/getFreelancers' , async(req , res) => {
+    const projection = {
+        username : 1,
+        email : 1,
+        userSkills : 1,
+        firstName : 1,
+        lastName : 1,
+        userAbout : 1,
+        userBio : 1,
+    }
     try{
-        const freelancers = await User.find({userStatus : USER_STATUS.VERIFIED , isRecruiter : false});
+        const freelancers = await Profile.find({} , projection);
         return res.status(200).send(freelancers);
     }
     catch(err){
+        console.log(err);
         return res.status(500).send(err);
     }
 });
@@ -26,9 +38,13 @@ router.post('/invite' , async(req , res) => {
 
     if(!inviteeId || !invitation || !id) return res.status(400).send("Bad Request");
 
+    const inviteeUsername = invitation.inviteeUsername;
+    delete invitation.inviteeUsername;
+
     const {error} = invitationValidator.validate(invitation);
     if(error) return res.status(400).send(error.details[0].message);
     
+    invitation.inviteeUsername = inviteeUsername;
     invitation.inviter = id;
     invitation.invitee = inviteeId;
     invitation.inviterUsername = username;
