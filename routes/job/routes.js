@@ -63,8 +63,9 @@ router.delete('/delete/:jobId' , async(req , res) => {
     }
 
     try{
-        await Job.deleteOne({jobId , postedBy : id});
-        return res.status(200).send("Job Deleted");
+        await Job.deleteOne({_id : jobId , postedBy : id});
+        await Application.deleteMany({jobId , recruiterId : id})
+        return res.status(200).send("Job Deleted successfully");
     }
     catch(err){
         return res.status(500).send(err);
@@ -97,11 +98,11 @@ router.post('/approveApplication' , async(req , res) => {
     }
 
     try{
-        const application = await Application.findOne({applicationId , recruiterId : id});
+        const application = await Application.findOne({_id : applicationId , recruiterId : id});
         if(!application){
             return res.status(400).send("Invalid Application");
         }
-        if(application.status === APPLICATION_STATUS.PENDING){
+        if(application.status !== APPLICATION_STATUS.PENDING){
             return res.status(400).send("Application already processed");
         }
         application.status = APPLICATION_STATUS.ACCEPTED;
