@@ -5,12 +5,12 @@ const express = require('express');
 const router = express.Router();
 
 //loading validators
-const {loginValidator , registerValidator , otpValidator} = require('./validators');
+const {loginValidator , registerValidator , otpValidator , resetOtpValidator} = require('./validators');
 
 //loading helpers
 const {doesUserExist} = require('../../helpers/db');
 const {hashPassword , comparePassword} = require('../../helpers/password')
-const {sendVerificationEmail , getRandomString  } = require('../../helpers/email');
+const {sendVerificationEmail , getRandomString  , sendResetOtp} = require('../../helpers/email');
 
 //loading mongoDB models
 const {User , USER_STATUS} = require('../../db/models/user/model');
@@ -181,6 +181,94 @@ router.post('/verifyjwt' , async (req, res) => {
     }
     catch(err){
         return res.status(400).send("Invalid Token");
+    }
+});
+
+router.post('/resetpassword' , async (req, res) => {
+    const {email} = req.body;
+    if(!email){
+        return res.status(400).send("Email not found");
+    }
+
+    const user = await doesUserExist({email});
+    if(!user){
+        return res.status(400).send("User not found");
+    }
+
+    if(user.userStatus === USER_STATUS.UNVERIFIED){
+        return res.status(400).send(ERR_CODES[414]);
+    }
+
+    if(user.userStatus === USER_STATUS.BLOCKED){
+        return res.status(400).send(ERR_CODES[415]);
+    }
+
+    const otp = getRandomString();
+    try{
+        await sendResetOtp(otp , user.username , email , "You have requested to reset your password.");
+        user.otp = otp;
+        await user.save();
+        return res.status(200).send("Email to reset password sent successfully to " + email);
+    }
+    catch(err){
+        console.log(err);
+        return res.status(502).send(ERR_CODES[502]);
+    }
+});
+
+router.post('/changepassword' , async (req, res) => {
+    const {email , password , confirmPassword , otp} = req.body;
+    if(!email || !password || !confirmPassword || !otp){
+        return res.status(400).send("Invalid Request");
+    }
+
+    if(password !== confirmPassword){
+        return res.status(400).send(ERR_CODES[409]);
+    }
+
+    delete req.body.confirmPassword;
+
+    const {error} = resetOtpValidator.validate(req.body);
+    if(error){
+        return res.status(400).send(error.message);
+    }
+
+    const user = await doesUserExist({email});
+    if(!user){
+        return res.status(400).send("User not found");
+    }
+
+    if(user.userStatus === USER_STATUS.UNVERIFIED){
+        return res.status(400).send(ERR_CODES[414]);
+    }
+
+    if(user.userStatus === USER_STATUS.BLOCKED){
+        return res.status(400).send(ERR_CODES[415]);
+    }
+
+    if(!user.otp || user.otp !== otp){
+        return res.status(400).send(ERR_CODES[412]);
+    }
+
+    let hashedPassword = null;
+    try{
+        hashedPassword = await hashPassword(password);
+    }
+    catch(err){
+        console.log(err);
+        return res.status(502).send(ERR_CODES[502]);
+    }
+
+    try{
+        user.password = hashedPassword;
+        user.otp = null;
+        await user.save();
+        console.log(user.otp)
+        return res.status(200).send("Password Changed Successfully");
+    }
+    catch(err){
+        console.log(err);
+        return res.status(501).send(ERR_CODES[501]);
     }
 });
 

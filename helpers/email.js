@@ -24,18 +24,25 @@ const sendInviteEmail = async (inviteeEmail , inviteeUsername, inviterUsername ,
 		}}
 	);
 
-	const mailBody = `Dear ${inviteeUsername},
+	const mailBody = `Dear ${inviteeUsername},<br><br>
 	
-	You have been invited by ${inviterUsername} to apply for the job of ${jobTitle}
+	You have been invited by ${inviterUsername} to join for the job of ${jobTitle}.<br><br>
 	
 	All the best for your application.`;
 
 	const mailOptions = {
 		from : process.env.SMTP_USER,
 		to : inviteeEmail,
-		subject : "Invitation to Apply",
+		subject : "Invitation to join",
 		html : mailBody
-	}	
+	}
+	
+	try{
+		await TRANSPORTER.sendMail(mailOptions)
+	}
+	catch(err){
+		throw err;
+	}
 };
 
 const sendVerificationEmail = async (otp , username , receiverEmailAdd , message) => {
@@ -52,12 +59,11 @@ const sendVerificationEmail = async (otp , username , receiverEmailAdd , message
 		}
 	})
 
-	const mailBody = `Dear ${username},
+	const mailBody = `Dear ${username},<br><br>
 
-	${message}
+	${message}<br><br>
 
 	Please click <a href="http://localhost:${process.env.PORT}/auth/verify/${otp}">here</a> to verify your email address.`;
-
 
 	const mailOptions = {
 		from : process.env.SMTP_USER,
@@ -74,4 +80,39 @@ const sendVerificationEmail = async (otp , username , receiverEmailAdd , message
 	}
 }
 
-module.exports = {getRandomString , sendVerificationEmail , sendInviteEmail};
+const sendResetOtp = async (otp , username , receiverEmailAdd , message) => {
+	const TRANSPORTER = nodemailer.createTransport({
+		host: process.env.SMTP_HOST,
+		port: 587,
+		secureConnection: false,
+		tls: {
+			ciphers: "SSLv3",
+		},
+		auth: {
+			user: process.env.SMTP_USER,
+			pass: process.env.SMTP_PASS
+		}
+	})
+
+	const mailBody = `Dear ${username},<br><br>
+
+	${message}<br><br>
+
+	Please click <a href="http://localhost:${process.env.FRONTEND_PORT}/resetPassword/${otp}">here</a> to reset your password.`;
+
+	const mailOptions = {
+		from : process.env.SMTP_USER,
+		to : receiverEmailAdd,
+		subject : "Request to reset password",
+		html : mailBody
+	}
+
+	try{
+		await TRANSPORTER.sendMail(mailOptions)
+	}
+	catch(err){
+		throw err;
+	}
+}
+
+module.exports = {getRandomString , sendVerificationEmail , sendInviteEmail , sendResetOtp};

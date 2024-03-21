@@ -40,4 +40,10 @@ const otpValidator = Joi.object({
     otp: otpSchema
 });
 
-module.exports = {loginValidator , registerValidator , otpValidator};
+const resetOtpValidator = Joi.object({
+    password: passwordSchema,
+    email: emailSchema,
+    otp: otpSchema
+});
+
+module.exports = {loginValidator , registerValidator , otpValidator , resetOtpValidator};
