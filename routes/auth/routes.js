@@ -56,6 +56,7 @@ router.post('/login' , async (req, res) => {
 
     const payLoad = {
         id : user._id,
+        email : user.email,
         username : user.username,
         userStatus : user.userStatus,
         isRecruiter : user.isRecruiter,
@@ -263,7 +264,6 @@ router.post('/changepassword' , async (req, res) => {
         user.password = hashedPassword;
         user.otp = null;
         await user.save();
-        console.log(user.otp)
         return res.status(200).send("Password Changed Successfully");
     }
     catch(err){

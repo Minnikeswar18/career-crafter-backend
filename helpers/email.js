@@ -10,6 +10,16 @@ const getRandomString = () => {
 	return result;
 }
 
+const getRandomRoomId = () => {
+	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	let result = "";
+	for(let count = 1 ; count <= 10 ; count++){
+		const randomIndex = Math.floor(Math.random() * characters.length);
+		result += characters.charAt(randomIndex);
+	}
+	return result;
+}
+
 const sendInviteEmail = async (inviteeEmail , inviteeUsername, inviterUsername , jobTitle) => {
 	const TRANSPORTER = nodemailer.createTransport({
 		host: process.env.SMTP_HOST,
@@ -115,4 +125,39 @@ const sendResetOtp = async (otp , username , receiverEmailAdd , message) => {
 	}
 }
 
-module.exports = {getRandomString , sendVerificationEmail , sendInviteEmail , sendResetOtp};
+const sendChatInvite = async (roomId , username , receiverEmailAdd , message) => {
+	const TRANSPORTER = nodemailer.createTransport({
+		host: process.env.SMTP_HOST,
+		port: 587,
+		secureConnection: false,
+		tls: {
+			ciphers: "SSLv3",
+		},
+		auth: {
+			user: process.env.SMTP_USER,
+			pass: process.env.SMTP_PASS
+		}
+	})
+
+	const mailBody = `Dear ${username},<br><br>
+
+	${message}<br><br>
+
+	Please click <a href="http://localhost:${process.env.FRONTEND_PORT}/chat/${username}/${roomId}">here</a> to join the chat.`;
+
+	const mailOptions = {
+		from : process.env.SMTP_USER,
+		to : receiverEmailAdd,
+		subject : "Invite for chat",
+		html : mailBody
+	}
+
+	try{
+		await TRANSPORTER.sendMail(mailOptions)
+	}
+	catch(err){
+		throw err;
+	}
+}
+
+module.exports = {getRandomString , sendVerificationEmail , sendInviteEmail , sendResetOtp , getRandomRoomId , sendChatInvite};

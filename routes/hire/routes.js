@@ -1,15 +1,13 @@
 const express = require('express');
 const router = express.Router();
 
-const {User , USER_STATUS} = require('../../db/models/user/model');
 const Profile = require('../../db/models/freelancer/model');
 
-const {Invitation, INVITATION_STATUS} = require('../../db/models/invitation/model');
+const {Invitation} = require('../../db/models/invitation/model');
 const {invitationValidator} = require('../job/validators');
-const {sendInviteEmail} = require('../../helpers/email');
+const {sendInviteEmail , getRandomRoomId , sendChatInvite} = require('../../helpers/email');
 
 const validateJwt = require('../../middleware/jwt');
-const mongoose = require('mongoose');
 router.use(validateJwt);
 
 router.get('/getFreelancers' , async(req , res) => {
@@ -85,6 +83,31 @@ router.delete('/deleteInvitation/:invitationId' , async(req , res) => {
         return res.status(500).send(err);
     }
 })
+
+router.post('/inviteToChat' , async(req , res) => {
+    const dest = req.body;
+    const {email , username} = req.user;
+    
+    if(!dest) return res.status(400).send("Bad Request");
+    const {inviteeEmail , inviteeUsername} = dest;
+
+    const roomId = getRandomRoomId();
+    try{
+        await sendChatInvite(roomId , inviteeUsername , inviteeEmail , `${username} has invited you to a chat.`);
+    }
+    catch(err){
+        return res.status(500).send("Error sending chat invite to" , inviteeUsername);
+    }
+
+    try{
+        await sendChatInvite(roomId , username , email , `You have invited ${inviteeUsername} to a chat.`);
+        return res.status(200).send("Chat Invite Sent Successfully");
+    }
+    catch(err){
+        console.log(err);
+        return res.status(500).send("Error sending chat invite to" , username);
+    }
+});
 
 module.exports = router;
 
