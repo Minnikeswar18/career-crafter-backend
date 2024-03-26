@@ -1,17 +1,22 @@
-const setupSocket = (io) => {
+const setupSocket = async(io) => {
     io.on("connection", socket => {
-        socket.on("joinRoom", data => {
+        socket.on("joinRoom", (data) => {
             const {roomId , username} = data;
-            socket.join(roomId);
-            console.log(username ,"joined room", roomId);
+             socket.join(roomId);
+             socket.to(roomId).emit("joined", username);
         });
 
-        socket.on("sendMessage" , messageContent =>{
-            socket.to(messageContent.roomId).emit("receiveMessage", messageContent);
+        socket.on("sendMessage" , (messageContent) =>{
+             socket.to(messageContent.roomId).emit("receiveMessage", messageContent);
         })
 
+        socket.on("leftRoom" , (data) => {
+            const {roomId , username} = data;
+            socket.to(roomId).emit("left" , username);
+        });
+
         socket.on("disconnect", () => {
-            console.log("User disconnected", socket.id);
+            console.log("User Disconnected");
         });
     });
 };
