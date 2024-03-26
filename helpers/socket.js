@@ -8,11 +8,6 @@ const setupSocket = async(io) => {
 
         socket.on("sendMessage" , (messageContent) =>{
              socket.to(messageContent.roomId).emit("receiveMessage", messageContent);
-        })
-
-        socket.on("leftRoom" , (data) => {
-            const {roomId , username} = data;
-            socket.to(roomId).emit("left" , username);
         });
 
         socket.on("disconnect", () => {
