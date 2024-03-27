@@ -129,7 +129,7 @@ const sendChatInvite = async (roomId , username , receiverEmailAdd , message) =>
 	const TRANSPORTER = nodemailer.createTransport({
 		host: process.env.SMTP_HOST,
 		port: 587,
-		secureConnection: false,
+		secureConnection: true,
 		tls: {
 			ciphers: "SSLv3",
 		},

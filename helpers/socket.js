@@ -1,13 +1,13 @@
-const setupSocket = async(io) => {
+const setupSocket = async (io) => {
     io.on("connection", socket => {
         socket.on("joinRoom", (data) => {
-            const {roomId , username} = data;
-             socket.join(roomId);
-             socket.to(roomId).emit("joined", username);
+            const { roomId, username } = data;
+            socket.join(roomId);
+            socket.to(roomId).emit("joined", username);
         });
 
-        socket.on("sendMessage" , (messageContent) =>{
-             socket.to(messageContent.roomId).emit("receiveMessage", messageContent);
+        socket.on("sendMessage", (messageContent) => {
+            socket.to(messageContent.roomId).emit("receiveMessage", messageContent);
         });
 
         socket.on("disconnect", () => {

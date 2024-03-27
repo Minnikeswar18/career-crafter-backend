@@ -7,7 +7,7 @@ const INVITATION_STATUS = {
 }
 
 const invitationSchema = mongoose.Schema({
-    invitee : {type : mongoose.Schema.Types.ObjectId , ref : 'User' , required : true},
+    invitee : {type : mongoose.Schema.Types.ObjectId , ref : 'Profile' , required : true},
     inviter : {type : mongoose.Schema.Types.ObjectId , ref : 'User' , required : true},
     inviteeUsername : {type : String , required : true},
     inviterUsername : {type : String , required : true},

@@ -96,7 +96,8 @@ router.post('/inviteToChat' , async(req , res) => {
         await sendChatInvite(roomId , inviteeUsername , inviteeEmail , `${username} has invited you to a chat.`);
     }
     catch(err){
-        return res.status(500).send("Error sending chat invite to" , inviteeUsername);
+        console.log(err);
+        return res.status(500).send(`Error sending chat invite to ${inviteeUsername}`);
     }
 
     try{
@@ -105,7 +106,7 @@ router.post('/inviteToChat' , async(req , res) => {
     }
     catch(err){
         console.log(err);
-        return res.status(500).send("Error sending chat invite to" , username);
+        return res.status(500).send(`Error sending chat invite to ${username}`);
     }
 });
 

@@ -1,13 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
-const {Server} = require('socket.io');
+const { Server } = require('socket.io');
 const http = require('http');
 
 const dotenv = require('dotenv');
 dotenv.config();
 
-const {connectToDataBase} = require('./helpers/db');
+const { connectToDataBase } = require('./helpers/db');
 const authRoutes = require('./routes/auth/routes');
 const jobRoutes = require('./routes/job/routes');
 const hireRoutes = require('./routes/hire/routes');
@@ -35,15 +35,15 @@ const io = new Server(httpServer, {
     }
 });
 
-connectToDataBase().then(async()=>{
-    try{
+connectToDataBase().then(async () => {
+    try {
         httpServer.listen(process.env.PORT, () => {
             console.log(`Server running on port ${process.env.PORT}`);
         });
 
         setupSocket(io);
     }
-    catch(err){
+    catch (err) {
         console.log("SERVER CONNECTION FAILED");
     }
 }).catch(err => {
