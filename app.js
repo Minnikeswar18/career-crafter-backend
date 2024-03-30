@@ -12,6 +12,7 @@ const authRoutes = require('./routes/auth/routes');
 const jobRoutes = require('./routes/job/routes');
 const hireRoutes = require('./routes/hire/routes');
 const profileRoutes = require('./routes/profile/routes');
+const homeRoutes = require('./routes/home/routes');
 const setupSocket = require('./helpers/socket.js');
 
 const app = express();
@@ -25,6 +26,7 @@ app.use('/auth', authRoutes);
 app.use('/job', jobRoutes);
 app.use('/hire', hireRoutes);
 app.use('/profile', profileRoutes);
+app.use('/home', homeRoutes);
 
 const httpServer = http.createServer(app);
 

@@ -139,11 +139,13 @@ const sendChatInvite = async (roomId , username , receiverEmailAdd , message) =>
 		}
 	})
 
+	const key = atob(`${username}/${roomId}`)
+
 	const mailBody = `Dear ${username},<br><br>
 
 	${message}<br><br>
 
-	Please click <a href="http://localhost:${process.env.FRONTEND_PORT}/chat/${username}/${roomId}">here</a> to join the chat.`;
+	Please click <a href="http://localhost:${process.env.FRONTEND_PORT}/chat/${key}">here</a> to join the chat.`;
 
 	const mailOptions = {
 		from : process.env.SMTP_USER,
