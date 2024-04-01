@@ -1,7 +1,4 @@
 const mongoose = require('mongoose');
-
-const Job = require('../db/models/job/model');
-const {User} = require('../db/models/user/model');
 let isConnected = false;
 
 const connectToDataBase = async() =>{
@@ -20,16 +17,5 @@ const connectToDataBase = async() =>{
     }
 }
 
-const doesUserExist = async (props) => {
-    try{
-        const user = await User.findOne(props);
-        return user;
-    }
-    catch(err){
-        throw err;
-    }
-}
-
 module.exports.connectToDataBase = connectToDataBase;
-module.exports.doesUserExist = doesUserExist;
 

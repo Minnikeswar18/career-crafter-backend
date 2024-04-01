@@ -52,3 +52,5 @@ connectToDataBase().then(async () => {
     console.log("DATABASE CONNECTION FAILED");
 })
 
+module.exports = app;
+

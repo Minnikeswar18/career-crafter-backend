@@ -8,25 +8,13 @@ const router = express.Router();
 const {loginValidator , registerValidator , otpValidator , resetOtpValidator} = require('./validators');
 
 //loading helpers
-const {doesUserExist} = require('../../helpers/db');
 const {hashPassword , comparePassword} = require('../../helpers/password')
 const {sendVerificationEmail , getRandomString  , sendResetOtp} = require('../../helpers/email');
 
 //loading mongoDB models
 const {User , USER_STATUS} = require('../../db/models/user/model');
 
-const ERR_CODES = {
-    501 : "Error occured at Database",
-    502 : "Error occured at Server",
-
-    409 : "Passwords do not match",
-    410 : "User with username already exists",
-    411 : "User with email already exists",
-    412 : "Invalid OTP",
-    413 : "Invalid Credentials",
-    414 : "User email not verified",
-    415 : "Unauthorized Access",
-};
+const {ERR_CODES} = require('../../helpers/constants');
 
 router.post('/login' , async (req, res) => {
     const { email, password } = req.body;
@@ -36,7 +24,15 @@ router.post('/login' , async (req, res) => {
         return res.status(400).send(error.details[0].message);
     }
 
-    const user = await doesUserExist({ email });
+    let user;
+    try{
+        user = await User.findOne({
+            email
+        });
+    }
+    catch(err){
+        return res.status(500).send(ERR_CODES[502]);
+    }
     if(!user){
         return res.status(400).send(ERR_CODES[413]);
     }
@@ -46,6 +42,11 @@ router.post('/login' , async (req, res) => {
     }
 
     if(user.userStatus === USER_STATUS.BLOCKED){
+        return res.status(400).send(ERR_CODES[415]);
+    }
+
+    // to be remove incase of expansion of the route for freelancers too
+    if(user.isRecruiter === false){
         return res.status(400).send(ERR_CODES[415]);
     }
 
@@ -69,7 +70,7 @@ router.post('/login' , async (req, res) => {
     }
     catch(err){
         console.log(err);
-        return res.status(502).send(ERR_CODES[502]);
+        return res.status(500).send(ERR_CODES[502]);
     }
 });
 
@@ -86,12 +87,12 @@ router.post('/register' , async (req, res) => {
         }
 
         try{
-            const userWithUsername = await doesUserExist({username});
+            const userWithUsername = await User.findOne({username});
             if(userWithUsername){
                 return res.status(400).send(ERR_CODES[410]);
             }
 
-            const userWithEmail = await doesUserExist({email});
+            const userWithEmail = await User.findOne({email});
             if(userWithEmail){
                 return res.status(400).send(ERR_CODES[411]);
             }
@@ -133,7 +134,7 @@ router.post('/register' , async (req, res) => {
     }
 });
 
-router.get('/verify/:otp' , async (req, res) => {
+router.get('/verify/:otp?' , async (req, res) => {
     const {otp} = req.params;
 
     if(!otp){
@@ -146,12 +147,12 @@ router.get('/verify/:otp' , async (req, res) => {
         return res.status(400).send(error.message);
     }
 
-    const userWithOtp = await doesUserExist({otp});
-    if(!userWithOtp){
-        return res.status(400).send(ERR_CODES[412]);
-    }
-
     try{
+        const userWithOtp = await User.findOne({otp});
+        if(!userWithOtp){
+            return res.status(400).send(ERR_CODES[412]);
+        }
+
         userWithOtp.userStatus = USER_STATUS.VERIFIED;
         userWithOtp.otp = null;
         await userWithOtp.save();
@@ -159,7 +160,7 @@ router.get('/verify/:otp' , async (req, res) => {
     }
     catch(err){
         console.log(err);
-        return res.status(501).send(ERR_CODES[501]);
+        return res.status(500).send(ERR_CODES[502]);
     }
 });
 
@@ -191,7 +192,16 @@ router.post('/resetpassword' , async (req, res) => {
         return res.status(400).send("Email not found");
     }
 
-    const user = await doesUserExist({email});
+    let user;
+    try{
+        user = await User.findOne({
+            email
+        });
+    }
+    catch(err){
+        return res.status(502).send(ERR_CODES[502]);
+    }
+    
     if(!user){
         return res.status(400).send("User not found");
     }
@@ -212,7 +222,6 @@ router.post('/resetpassword' , async (req, res) => {
         return res.status(200).send("Email to reset password sent successfully to " + email);
     }
     catch(err){
-        console.log(err);
         return res.status(502).send(ERR_CODES[502]);
     }
 });
@@ -234,7 +243,15 @@ router.post('/changepassword' , async (req, res) => {
         return res.status(400).send(error.message);
     }
 
-    const user = await doesUserExist({email});
+    let user;
+
+    try{
+        user = await User.findOne({email});
+    }
+    catch(err){
+        return res.status(502).send(ERR_CODES[502]);
+    }
+
     if(!user){
         return res.status(400).send("User not found");
     }
@@ -267,7 +284,6 @@ router.post('/changepassword' , async (req, res) => {
         return res.status(200).send("Password Changed Successfully");
     }
     catch(err){
-        console.log(err);
         return res.status(501).send(ERR_CODES[501]);
     }
 });

@@ -1,18 +1,7 @@
 const jwt = require('jsonwebtoken');
 const {USER_STATUS} = require('../db/models/user/model');
 
-const ERR_CODES = {
-    501 : "Error occured at Database",
-    502 : "Error occured at Server",
-
-    409 : "Passwords do not match",
-    410 : "User with username already exists",
-    411 : "User with email already exists",
-    412 : "Invalid OTP",
-    413 : "Invalid Credentials",
-    414 : "User not verified",
-    415 : "Unauthorized Access",
-};
+const {ERR_CODES} = require('../helpers/constants');
 
 const validateJwt = (req , res , next) => {
     

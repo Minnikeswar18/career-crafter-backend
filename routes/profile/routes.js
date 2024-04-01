@@ -2,11 +2,10 @@ const express = require('express');
 const router = express.Router();
 
 const {profileValidator , emailValidator , passwordValidator} = require('./validators');
-const { doesUserExist } = require('../../helpers/db');
 const { comparePassword , hashPassword } = require('../../helpers/password');
 const {sendVerificationEmail , getRandomString} = require('../../helpers/email');
 const validateJwt = require('../../middleware/jwt');
-const { USER_STATUS } = require('../../db/models/user/model');
+const {User , USER_STATUS } = require('../../db/models/user/model');
 
 router.use(validateJwt);
 
@@ -17,7 +16,7 @@ router.get('/getProfile' , async(req , res) => {
     if(isRecruiter === false) return res.status(403).send("Unauthorized Access");
 
     try{
-        const user = await doesUserExist({_id : id});
+        const user = await User.findOne({_id : id});
         if(!user) return res.status(404).send("User Not Found");
 
         const profile = {
@@ -49,7 +48,7 @@ router.post('/updateProfile' , async(req , res) => {
     if(error) return res.status(400).send(error.details[0].message);
     
     try{
-        const user = await doesUserExist({_id : id});
+        const user = await User.findOne({_id : id});
         if(!user) return res.status(404).send("User Not Found");
 
         user.firstName = profile.firstName;
@@ -74,13 +73,13 @@ router.post('/changeEmail' , async(req , res) => {
     const {email , password} = req.body.data;
     const otp = getRandomString() + username;
     try{
-        const user = await doesUserExist({email});
+        const user = await User.findOne({email});
         if(user){
             if(user._id.toString() === id) return res.status(400).send("Email is same as previous one");
             return res.status(400).send("User with this email exists")
         }
 
-        const currUser = await doesUserExist({_id : id});
+        const currUser = await User.findOne({_id : id});
         if(!currUser) return res.status(404).send("User Not Found");
 
         const isMatch = await comparePassword(password , currUser.password);
@@ -117,7 +116,7 @@ router.post('/changePassword' , async(req , res) => {
     if(error) return res.status(400).send(error.details[0].message);
 
     try{
-        const user = await doesUserExist({_id : id});
+        const user = await User.findOne({_id : id});
         if(!user) return res.status(404).send("User Not Found");
 
         const isMatchWithOld = await comparePassword(currentPassword , user.password);
