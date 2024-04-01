@@ -1,7 +1,7 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const mongoose = require('mongoose');
-const rewire = require('rewire');
+// const rewire = require('rewire');
 
 const sandbox = require('sinon').createSandbox();
 
@@ -10,11 +10,11 @@ const {ERR_CODES} = require('../helpers/constants');
 
 const app = require('../app');
 
-let passwords = rewire('../helpers/password');
+const passwords = require('../helpers/password');
 const {getRandomString} = require('../helpers/email');
 
 const expect = chai.expect;
-const should = chai.should();
+chai.should();
 
 chai.use(chaiHttp);
 
@@ -272,7 +272,7 @@ describe('Authentication routes /auth' , () => {
         afterEach(() => {
             sandbox.restore();
         });
-        
+                
         describe('verify without otp' , () => {
             it("should return 400" , (done) => {
                 chai.request(app)
@@ -326,5 +326,118 @@ describe('Authentication routes /auth' , () => {
         });
     });
 
+    describe('/verifyjwt', () => {
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+
+        describe('verify without token' , () => {
+            it("should return 400" , (done) => {
+                chai.request(app)
+                .post('/auth/verifyjwt')
+                .end((err , res) => {
+                    res.should.have.status(400);
+                    expect(res.error).instanceOf(Object);
+                    expect(res.error.text).to.equal('Token not found');
+                    done();
+                })
+            })
+        });
+
+        // describe('verify with invalid token' , () => {
+
+        //     before(() => {
+        //         sandbox.stub(jwt , 'verify').returns(new Error());
+        //     })
+
+        //     after(() => {
+        //         sandbox.restore();
+        //     })
+        //     it("should return 400" , (done) => {
+        //         chai.request(app)
+        //         .post('/auth/verifyjwt')
+        //         .send({
+        //             jwt : "invalidToken"
+        //         })
+        //         .end((err , res) => {
+        //             res.should.have.status(400);
+        //             expect(res.error).instanceOf(Object);
+        //             expect(res.error.text).to.equal('Invalid Token');
+        //             done();
+        //         })
+        //     })
+        // });
+
+    });
+
+    describe('/changepassword' , () => {
+        const otp = getRandomString() + userData.username;
+        beforeEach(async() => {
+            sandbox.stub(mongoose.Model , 'findOne').resolves({
+                ...userData,
+                password : await passwords.hashPassword(userData.password),
+                save : sandbox.stub().resolves(),
+                otp : otp
+            });
+        })
+
+        afterEach(() => {
+            sandbox.restore();
+        })
+
+        describe('change password with correct credentials' , () => {
+
+            it("should return 200 with complete credentials" , (done) => {
+                chai.request(app)
+                    .post('/auth/changepassword')
+                    .send({
+                        email : userData.email,
+                        password : userData.password,
+                        confirmPassword : userData.password,
+                        otp : otp
+                    })
+                    .end((err , res) => {
+                        res.should.have.status(200);
+                        expect(res.error).to.be.false;
+                        expect(res.text).to.equal("Password Changed Successfully");
+                        done();
+                    })
+            })
+
+            it("should return 400 with incomplete request body" , (done) => {
+                chai.request(app)
+                    .post('/auth/changepassword')
+                    .send({
+                        email : userData.email,
+                        password : userData.password,
+                        otp : otp
+                    })
+                    .end((err , res) => {
+                        res.should.have.status(400);
+                        expect(res.error).instanceOf(Object);
+                        expect(res.error.text).to.equal("Invalid Request");
+                        done();
+                    })
+            })
+
+            it("should return 400 with incorrect otp" , (done) => {
+                chai.request(app)
+                    .post('/auth/changepassword')
+                    .send({
+                        email : userData.email,
+                        password : userData.password,
+                        confirmPassword : userData.password,
+                        otp : getRandomString() + userData.username
+                    })
+                    .end((err , res) => {
+                        res.should.have.status(400);
+                        expect(res.error).instanceOf(Object);
+                        expect(res.error.text).to.equal(ERR_CODES[412]);
+                        done();
+                    })
+            })
+        });
+    })
     
 })

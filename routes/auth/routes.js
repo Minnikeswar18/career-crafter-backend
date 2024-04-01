@@ -170,7 +170,7 @@ router.post('/verifyjwt' , async (req, res) => {
         return res.status(400).send("Token not found");
     }
     try{
-        const decoded = jwt.verify(token , process.env.SECRET_KEY);
+        const decoded = await jwt.verify(token , process.env.SECRET_KEY);
         if(decoded.userStatus === USER_STATUS.BLOCKED){
             return res.status(400).send(ERR_CODES[415]);
         }
@@ -182,7 +182,7 @@ router.post('/verifyjwt' , async (req, res) => {
         return res.status(200).send(decoded);
     }
     catch(err){
-        return res.status(400).send("Invalid Token");
+        return res.status(400).send(err);
     }
 });
 

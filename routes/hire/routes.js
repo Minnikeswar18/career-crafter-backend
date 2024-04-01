@@ -3,6 +3,7 @@ const router = express.Router();
 
 const Profile = require('../../db/models/freelancer/model');
 
+const {ERR_CODES} = require('../../helpers/constants')
 const {Invitation} = require('../../db/models/invitation/model');
 const {invitationValidator} = require('../job/validators');
 const {sendInviteEmail , getRandomRoomId , sendChatInvite} = require('../../helpers/email');
@@ -25,8 +26,7 @@ router.get('/getFreelancers' , async(req , res) => {
         return res.status(200).send(freelancers);
     }
     catch(err){
-        console.log(err);
-        return res.status(500).send(err);
+        return res.status(500).send(ERR_CODES[502]);
     }
 });
 
@@ -34,8 +34,8 @@ router.post('/invite' , async(req , res) => {
     const {inviteeId , invitation} = req.body;
     const {id , username} = req.user;
 
-    if(!inviteeId || !invitation || !id) return res.status(400).send("Bad Request");
-
+    if(!inviteeId || !invitation) return res.status(400).send("Bad Request");
+    
     const inviteeUsername = invitation.inviteeUsername;
     delete invitation.inviteeUsername;
 
@@ -49,43 +49,47 @@ router.post('/invite' , async(req , res) => {
     try{
         const newInvitation = new Invitation(invitation);
         await newInvitation.save();
+    }
+    catch(err){
+        return res.status(500).send(ERR_CODES[502]);
+    }
+    try{
         await sendInviteEmail(invitation.inviteeEmail , invitation.inviteeUsername , username , invitation.jobTitle);
         return res.status(200).send("Invitation sent successfully");
     }
     catch(err){
-        return res.status(500).send(err);
+        return res.status(500).send(ERR_CODES[501]);
     }
 });
 
 router.get('/getInvitations' , async(req , res) => {
     const {id} = req.user;
-    if(!id) return res.status(400).send("Bad Request");
 
     try{
         const invitations = await Invitation.find({inviter : id});
         return res.status(200).send(invitations);
     }
     catch(err){
-        return res.status(500).send(err);
+        return res.status(500).send(ERR_CODES[502]);
     }
 });
 
-router.delete('/deleteInvitation/:invitationId' , async(req , res) => {
+router.delete('/deleteInvitation/:invitationId?' , async(req , res) => {
     const {invitationId} = req.params;
     const userId = req.user.id;
-    if(!invitationId || !userId) return res.status(400).send("Bad Request");
+    if(!invitationId) return res.status(400).send("Bad Request");
 
     try{
         await Invitation.deleteOne({_id : invitationId, inviter : userId});
         return res.status(200).send("Invitation Deleted Successfully");
     }
     catch(err){
-        return res.status(500).send(err);
+        return res.status(500).send(ERR_CODES[502]);
     }
 })
 
 router.post('/inviteToChat' , async(req , res) => {
-    const dest = req.body;
+    const {dest} = req.body;
     const {email , username} = req.user;
     
     if(!dest) return res.status(400).send("Bad Request");

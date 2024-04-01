@@ -1,5 +1,20 @@
 const nodemailer = require('nodemailer')
 
+const getTransporter = () => {
+	return nodemailer.createTransport({
+		host: process.env.SMTP_HOST,
+		port: 587,
+		secureConnection: false,
+		tls: {
+			ciphers: "SSLv3",
+		},
+		auth: {
+			user: process.env.SMTP_USER,
+			pass: process.env.SMTP_PASS
+		}}
+	);
+}
+
 const getRandomString = () => {
 	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 	let result = "";
@@ -21,18 +36,7 @@ const getRandomRoomId = () => {
 }
 
 const sendInviteEmail = async (inviteeEmail , inviteeUsername, inviterUsername , jobTitle) => {
-	const TRANSPORTER = nodemailer.createTransport({
-		host: process.env.SMTP_HOST,
-		port: 587,
-		secureConnection: false,
-		tls: {
-			ciphers: "SSLv3",
-		},
-		auth: {
-			user: process.env.SMTP_USER,
-			pass: process.env.SMTP_PASS
-		}}
-	);
+	const TRANSPORTER = getTransporter();
 
 	const mailBody = `Dear ${inviteeUsername},<br><br>
 	
@@ -48,7 +52,7 @@ const sendInviteEmail = async (inviteeEmail , inviteeUsername, inviterUsername ,
 	}
 	
 	try{
-		await TRANSPORTER.sendMail(mailOptions)
+		await TRANSPORTER.sendMail(mailOptions)	
 	}
 	catch(err){
 		throw err;
@@ -56,18 +60,7 @@ const sendInviteEmail = async (inviteeEmail , inviteeUsername, inviterUsername ,
 };
 
 const sendVerificationEmail = async (otp , username , receiverEmailAdd , message) => {
-	const TRANSPORTER = nodemailer.createTransport({
-		host: process.env.SMTP_HOST,
-		port: 587,
-		secureConnection: false,
-		tls: {
-			ciphers: "SSLv3",
-		},
-		auth: {
-			user: process.env.SMTP_USER,
-			pass: process.env.SMTP_PASS
-		}
-	})
+	const TRANSPORTER = getTransporter();
 
 	const mailBody = `Dear ${username},<br><br>
 
@@ -91,18 +84,7 @@ const sendVerificationEmail = async (otp , username , receiverEmailAdd , message
 }
 
 const sendResetOtp = async (otp , username , receiverEmailAdd , message) => {
-	const TRANSPORTER = nodemailer.createTransport({
-		host: process.env.SMTP_HOST,
-		port: 587,
-		secureConnection: false,
-		tls: {
-			ciphers: "SSLv3",
-		},
-		auth: {
-			user: process.env.SMTP_USER,
-			pass: process.env.SMTP_PASS
-		}
-	})
+	const TRANSPORTER = getTransporter();
 
 	const mailBody = `Dear ${username},<br><br>
 
@@ -126,18 +108,7 @@ const sendResetOtp = async (otp , username , receiverEmailAdd , message) => {
 }
 
 const sendChatInvite = async (roomId , username , receiverEmailAdd , message) => {
-	const TRANSPORTER = nodemailer.createTransport({
-		host: process.env.SMTP_HOST,
-		port: 587,
-		secureConnection: true,
-		tls: {
-			ciphers: "SSLv3",
-		},
-		auth: {
-			user: process.env.SMTP_USER,
-			pass: process.env.SMTP_PASS
-		}
-	})
+	const TRANSPORTER = getTransporter();
 
 	const key = atob(`${username}/${roomId}`)
 
