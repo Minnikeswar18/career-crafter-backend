@@ -4,14 +4,12 @@ const validateJwt = require('../../middleware/jwt');
 const Job = require('../../db/models/job/model');
 const Profile = require('../../db/models/freelancer/model');
 const assignScores = require('../../helpers/recommend');
+const {ERR_CODES} = require('../../helpers/constants');
 
 router.use(validateJwt);
 
 router.get('/myjobs' , async(req , res) => {
     const {id} = req.user;
-    if(!id){
-        return res.status(400).send("Invalid User Id");
-    }
 
     try{
         const projection = {
@@ -23,21 +21,17 @@ router.get('/myjobs' , async(req , res) => {
         return res.status(200).send(jobs);
     }
     catch(err){
-        return res.status(500).send(err);
+        return res.status(500).send(ERR_CODES[502]);
     }
 });
 
-router.get('/similarProfiles/:jobId' , async(req , res) => {
+router.get('/similarProfiles/:jobId?' , async(req , res) => {
     const {jobId} = req.params;
     if(!jobId){
         return res.status(400).send("Invalid Job Id");
     }
 
     const {id} = req.user;
-    if(!id){
-        return res.status(400).send("Invalid User Id");
-    }
-
     try{
         const job = await Job.findOne({_id : jobId , postedBy : id});
         if(!job){
@@ -59,7 +53,7 @@ router.get('/similarProfiles/:jobId' , async(req , res) => {
         return res.status(200).send(result);
     }
     catch(err){
-        return res.status(500).send(err);
+        return res.status(500).send(ERR_CODES[502]);
     }
 });
 

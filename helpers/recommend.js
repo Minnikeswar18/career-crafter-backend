@@ -22,7 +22,7 @@ const calculateJaccardSimilarity = (jobSkills, userSkills) => {
 }
 
 const assignScores = async(profiles , job) => {
-    if(!profiles || !job){
+    if(profiles.length === 0 || !job){
         return [];
     }
     const jobTags = await extractTags(job.jobDescription + " " + job.jobTitle , job.jobSkills);
