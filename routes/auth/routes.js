@@ -69,8 +69,7 @@ router.post('/login' , async (req, res) => {
         res.status(200).send({token , message : "Login Successful"})
     }
     catch(err){
-        console.log(err);
-        return res.status(500).send(ERR_CODES[502]);
+        return res.status(500).send(ERR_CODES[501]);
     }
 });
 
@@ -98,7 +97,6 @@ router.post('/register' , async (req, res) => {
             }
         }
         catch(err){
-            console.log(err);
             return res.status(502).send(ERR_CODES[502]);
         }
 
@@ -110,7 +108,6 @@ router.post('/register' , async (req, res) => {
             await sendVerificationEmail(otp , username , email , "Thanks for registering.");
         }
         catch(err){
-            console.log(err);
             return res.status(502).send(ERR_CODES[502]);
         }
 
@@ -128,8 +125,7 @@ router.post('/register' , async (req, res) => {
             return res.status(200).send("Registration Successful and email sent successfully to " + email);
         }
         catch(err){
-            console.log(err);
-            return res.status(501).send(ERR_CODES[501]);
+            return res.status(500).send(ERR_CODES[502]);
         }
     }
 });
@@ -159,7 +155,6 @@ router.get('/verify/:otp?' , async (req, res) => {
         return res.status(200).send("Email Verified Successfully");
     }
     catch(err){
-        console.log(err);
         return res.status(500).send(ERR_CODES[502]);
     }
 });
@@ -182,7 +177,7 @@ router.post('/verifyjwt' , async (req, res) => {
         return res.status(200).send(decoded);
     }
     catch(err){
-        return res.status(400).send(err);
+        return res.status(400).send('Invalid Token');
     }
 });
 
@@ -199,7 +194,7 @@ router.post('/resetpassword' , async (req, res) => {
         });
     }
     catch(err){
-        return res.status(502).send(ERR_CODES[502]);
+        return res.status(500).send(ERR_CODES[502]);
     }
     
     if(!user){
