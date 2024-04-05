@@ -90,7 +90,7 @@ const sendResetOtp = async (otp , username , receiverEmailAdd , message) => {
 
 	${message}<br><br>
 
-	Please click <a href="http://localhost:${process.env.FRONTEND_PORT}/resetPassword/${otp}">here</a> to reset your password.`;
+	Please click <a href="${process.env.FRONTEND_URL}/resetPassword/${otp}">here</a> to reset your password.`;
 
 	const mailOptions = {
 		from : process.env.SMTP_USER,
@@ -116,7 +116,7 @@ const sendChatInvite = async (roomId , username , receiverEmailAdd , message) =>
 
 	${message}<br><br>
 
-	Please click <a href="http://localhost:${process.env.FRONTEND_PORT}/chat/${key}">here</a> to join the chat.`;
+	Please click <a href="${process.env.FRONTEND_URL}/chat/${key}">here</a> to join the chat.`;
 
 	const mailOptions = {
 		from : process.env.SMTP_USER,
