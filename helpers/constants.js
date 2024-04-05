@@ -1,6 +1,6 @@
 const ERR_CODES = {
-    501 : "Error occured at Database",
-    502 : "Error occured at Server",
+    502 : "Error occured at Database",
+    501 : "Error occured at Server",
 
     409 : "Passwords do not match",
     410 : "User with username already exists",

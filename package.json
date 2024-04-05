@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha test/*.spec.js --timeout 5000 --exit",
     "start": "nodemon app.js",
-    "coverage": "nyc --reporter=html --reporter=text mocha test/*.spec.js --timeout 5000 --exit"
+    "coverage": "nyc --all --reporter=html --reporter=text mocha test/*.spec.js --timeout 5000 --exit"
   },
   "author": "",
   "license": "ISC",

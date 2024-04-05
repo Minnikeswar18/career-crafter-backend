@@ -109,7 +109,6 @@ router.post('/inviteToChat' , async(req , res) => {
         return res.status(200).send("Chat Invite Sent Successfully");
     }
     catch(err){
-        console.log(err);
         return res.status(500).send(`Error sending chat invite to ${username}`);
     }
 });

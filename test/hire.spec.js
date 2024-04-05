@@ -1,6 +1,6 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const app = require('../app');
+const {app} = require('../app');
 const mongoose = require('mongoose');
 const sandbox = require('sinon').createSandbox();
 const { USER_STATUS } = require('../db/models/user/model');

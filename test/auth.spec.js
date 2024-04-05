@@ -5,12 +5,11 @@ const rewire = require('rewire')
 const jwt = rewire('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const sandbox = require('sinon').createSandbox();
-const bcrypt = require('bcrypt');
 
 const {USER_STATUS} = require('../db/models/user/model');
 const {ERR_CODES} = require('../helpers/constants');
 
-const app = require('../app');
+const {app} = require('../app');
 
 const passwords = require('../helpers/password');
 const {getRandomString} = require('../helpers/email');

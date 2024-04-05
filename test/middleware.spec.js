@@ -1,6 +1,6 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const app = require('../app');
+const {app} = require('../app');
 const sandbox = require('sinon').createSandbox();
 const jwt = require('jsonwebtoken');
 const {ERR_CODES} = require('../helpers/constants');

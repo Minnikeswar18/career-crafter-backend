@@ -6,14 +6,15 @@ const {Application , APPLICATION_STATUS} = require('../../db/models/application/
 
 const getNextSequenceValue = require('../../helpers/sequence');
 const {jobValidator} = require('./validators');
+const { ERR_CODES } = require('../../helpers/constants');
 
 router.use(validateJwt);
 
 router.post('/add' , async(req , res) => {
     
-    const {id } = req.user;
+    const {id} = req.user;
 
-    const job = req.body;
+    const job = req.body.newJob;
     if(!job){
         return res.status(400).send("Invalid Job Data");
     }
@@ -25,36 +26,31 @@ router.post('/add' , async(req , res) => {
 
     job.datePosted = new Date();
     job.postedBy = id;
-    job.jobId = await getNextSequenceValue('jobId');
-
+    
     try{
+        job.jobId = await getNextSequenceValue('jobId');
         const newJob = new Job(job);
         await newJob.save();
         return res.status(200).send("Job Added");
     }
     catch(err){
-        return res.status(500).send(err);
+        return res.status(500).send(ERR_CODES[502]);
     }
     
 });
 
 router.get('/myjobs' , async(req , res) => {
     const {id} = req.user;
-
-    if(!id){
-        return res.status(400).send("Invalid User Id");
-    }
-
     try{
         const jobs = await Job.find({postedBy : id});
         return res.status(200).send(jobs);
     }
     catch(err){
-        return res.status(500).send(err);
+        return res.status(500).send(ERR_CODES[502]);
     }
 });
 
-router.delete('/delete/:jobId' , async(req , res) => {
+router.delete('/delete/:jobId?' , async(req , res) => {
     const {id} = req.user;
     const jobId = req.params.jobId;
     
@@ -72,7 +68,7 @@ router.delete('/delete/:jobId' , async(req , res) => {
     }
 });
 
-router.get('/getApplications/:jobId' , async(req , res) => {
+router.get('/getApplications/:jobId?' , async(req , res) => {
     const {id} = req.user;
     const jobId = req.params.jobId;
 
@@ -81,11 +77,12 @@ router.get('/getApplications/:jobId' , async(req , res) => {
     }
 
     try{
-        const applications = await Application.find({jobId , recruiterId : id}).populate('appliedBy');
+        let applications = await Application.find({jobId , recruiterId : id});
+        applications = await Application.populate(applications, { path: 'appliedBy' });
         return res.status(200).send(applications);
     }
     catch(err){
-        return res.status(500).send(err);
+        return res.status(500).send(ERR_CODES[502]);
     }
 });
 

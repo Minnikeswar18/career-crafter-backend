@@ -37,20 +37,24 @@ const io = new Server(httpServer, {
     }
 });
 
-connectToDataBase().then(async () => {
-    try {
-        httpServer.listen(process.env.PORT, () => {
-            console.log(`Server running on port ${process.env.PORT}`);
-        });
+const init = () => {
+    connectToDataBase().then(async () => {
+        try {
+            httpServer.listen(process.env.PORT, () => {
+                console.log(`Server running on port ${process.env.PORT}`);
+            });
+    
+            setupSocket(io);
+        }
+        catch (err) {
+            console.log("SERVER CONNECTION FAILED");
+        }
+    }).catch(err => {
+        console.log("DATABASE CONNECTION FAILED");
+    });
+}
 
-        setupSocket(io);
-    }
-    catch (err) {
-        console.log("SERVER CONNECTION FAILED");
-    }
-}).catch(err => {
-    console.log("DATABASE CONNECTION FAILED");
-})
+init();
 
-module.exports = app;
+module.exports = {app , init};
 
