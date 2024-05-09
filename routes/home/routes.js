@@ -53,6 +53,7 @@ router.get('/similarProfiles/:jobId?' , async(req , res) => {
         return res.status(200).send(result);
     }
     catch(err){
+        
         return res.status(500).send(ERR_CODES[502]);
     }
 });

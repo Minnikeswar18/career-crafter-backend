@@ -97,6 +97,7 @@ router.post('/register' , async (req, res) => {
             }
         }
         catch(err){
+            console.log(err);
             return res.status(502).send(ERR_CODES[502]);
         }
 
@@ -108,7 +109,8 @@ router.post('/register' , async (req, res) => {
             await sendVerificationEmail(otp , username , email , "Thanks for registering.");
         }
         catch(err){
-            return res.status(502).send(ERR_CODES[502]);
+            console.log(err);
+            return res.status(500).send(ERR_CODES[502]);
         }
 
         // saving the data to the database
@@ -125,6 +127,7 @@ router.post('/register' , async (req, res) => {
             return res.status(200).send("Registration Successful and email sent successfully to " + email);
         }
         catch(err){
+            console.log(err);
             return res.status(500).send(ERR_CODES[502]);
         }
     }
@@ -189,11 +192,10 @@ router.post('/resetpassword' , async (req, res) => {
 
     let user;
     try{
-        user = await User.findOne({
-            email
-        });
+        user = await User.findOne(email);
     }
     catch(err){
+        console.log(err);
         return res.status(500).send(ERR_CODES[502]);
     }
     

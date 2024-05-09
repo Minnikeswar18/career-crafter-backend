@@ -19,7 +19,7 @@ const passwordSchema = joi.string()
     .max(20)
     .required()
     .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=])[A-Za-z\d@#$%^&+=]+$/)
-    .message('New password must contain at least one lowercase and one uppercase alphabet, one number and one special character (@#$%^&+=)');
+    .message('Password must contain at least one lowercase and one uppercase alphabet, one number and one special character (@#$%^&+=)');
 
 
 const profileValidator = joi.object({

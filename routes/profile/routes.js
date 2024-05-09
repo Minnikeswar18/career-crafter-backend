@@ -94,6 +94,7 @@ router.post('/changeEmail' , async(req , res) => {
         await sendVerificationEmail(otp , username , email , "Your email has been updated successfully.");
     }
     catch(err){
+        console.log(err);
         return res.status(500).send("Email updated successfully but verification email could not be sent");
     }
     return res.status(200).send("Email updated successfully and verification email sent");

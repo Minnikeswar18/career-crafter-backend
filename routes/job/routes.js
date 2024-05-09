@@ -54,7 +54,7 @@ router.delete('/delete/:jobId?' , async(req , res) => {
     const {id} = req.user;
     const jobId = req.params.jobId;
     
-    if(!jobId){
+    if(!jobId | jobId == 'undefined'){
         return res.status(400).send("Invalid Job Id");
     }
 
@@ -71,11 +71,11 @@ router.delete('/delete/:jobId?' , async(req , res) => {
 router.get('/getApplications/:jobId?' , async(req , res) => {
     const {id} = req.user;
     const jobId = req.params.jobId;
-
-    if(!jobId){
+    
+    if(!jobId || jobId == 'undefined'){
         return res.status(400).send("Invalid Job Id");
     }
-
+    
     try{
         let applications = await Application.find({jobId , recruiterId : id});
         applications = await Application.populate(applications, { path: 'appliedBy' });

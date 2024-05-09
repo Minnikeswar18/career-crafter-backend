@@ -7,7 +7,7 @@ const validateJwt = (req , res , next) => {
     
     const authHeader = req.headers.authorization;
     if(!authHeader || !authHeader.startsWith('Bearer ')){
-        return res.status(401).send(ERR_CODES[502]);
+        return res.status(401).send('Invalid Auth Header');
     }
 
     const token = authHeader.split(' ')[1];
@@ -38,7 +38,7 @@ const validateJwt = (req , res , next) => {
         return next();
     }
     catch(err){
-        return res.status(401).send(ERR_CODES[502]);
+        return res.status(401).send("Invalid Token");
     }
 }
 

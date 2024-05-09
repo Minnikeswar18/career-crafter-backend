@@ -110,13 +110,11 @@ const sendResetOtp = async (otp , username , receiverEmailAdd , message) => {
 const sendChatInvite = async (roomId , username , receiverEmailAdd , message) => {
 	const TRANSPORTER = getTransporter();
 
-	const key = atob(`${username}/${roomId}`)
-
 	const mailBody = `Dear ${username},<br><br>
 
 	${message}<br><br>
 
-	Please click <a href="${process.env.FRONTEND_URL}/chat/${key}">here</a> to join the chat.`;
+	Please click <a href="${process.env.FRONTEND_URL}/chat/${username}/${roomId}">here</a> to join the chat.`;
 
 	const mailOptions = {
 		from : process.env.SMTP_USER,
